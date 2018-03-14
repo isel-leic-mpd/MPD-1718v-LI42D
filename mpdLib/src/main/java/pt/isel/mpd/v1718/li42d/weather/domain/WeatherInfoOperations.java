@@ -4,5 +4,5 @@ import java.time.LocalDate;
 import java.util.Collection;
 
 public interface WeatherInfoOperations {
-    Collection<DailyWeatherInfo> getDailyWeatherInfo(LocalDate start, LocalDate end);
+    Collection<DailyWeatherInfo> getDailyWeatherInfo(String location, LocalDate start, LocalDate end);
 }
