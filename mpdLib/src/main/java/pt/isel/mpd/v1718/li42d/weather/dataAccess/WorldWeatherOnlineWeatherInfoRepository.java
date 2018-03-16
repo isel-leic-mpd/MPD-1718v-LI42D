@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.Collection;
 
 public class WorldWeatherOnlineWeatherInfoRepository extends WeatherInfoRepositoryBase {
     private static final String KEY_FILE = "key.txt";
@@ -30,11 +29,11 @@ public class WorldWeatherOnlineWeatherInfoRepository extends WeatherInfoReposito
 
 
     @Override
-    public Collection<DailyWeatherInfoDto> getDailyWeatherInfoDtos(String location, LocalDate start, LocalDate end) {
+    protected InputStream getStream(String location, LocalDate start, LocalDate end) {
         String url = MessageFormat.format(URL_TEMPLATE, location, KEY, start.toString(), end.toString());
         System.out.println(url);
         try {
-            return super.createWeatehrInfoDtosFromTextLines(new URL(url).openStream(), location, start, end);
+            return new URL(url).openStream();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,9 +1,6 @@
 package pt.isel.mpd.v1718.li42d.weather.dataAccess;
 
-import pt.isel.mpd.v1718.li42d.weather.domain.DailyWeatherInfo;
-
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
@@ -11,7 +8,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class WeatherInfoRepositoryBase implements WeatherInfoRepository {
-    protected Collection<DailyWeatherInfoDto> createWeatehrInfoDtosFromTextLines(InputStream inputStream, String location, LocalDate start, LocalDate end) {
+
+
+    @Override
+    public Collection<DailyWeatherInfoDto> getDailyWeatherInfoDtos(String location, LocalDate start, LocalDate end) {
+        InputStream inputStream = getStream(location, start, end);
+
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
         Collection<DailyWeatherInfoDto> coll = new ArrayList<>();
         try {
@@ -21,7 +23,7 @@ public abstract class WeatherInfoRepositoryBase implements WeatherInfoRepository
                 br.readLine();
             }
             while ((line = br.readLine()) != null) {
-                if(!line.startsWith("#")) {
+                if (!line.startsWith("#")) {
                     final String[] split = line.split(",");
                     if (split.length == 9) {
                         LocalDate date = LocalDate.parse(split[0]);
@@ -35,5 +37,9 @@ public abstract class WeatherInfoRepositoryBase implements WeatherInfoRepository
             throw new RuntimeException(e);
         }
         return coll;
+
+
     }
+
+    protected abstract InputStream getStream(String location, LocalDate start, LocalDate end);
 }
