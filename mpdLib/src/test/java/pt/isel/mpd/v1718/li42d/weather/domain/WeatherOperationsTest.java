@@ -1,7 +1,7 @@
 package pt.isel.mpd.v1718.li42d.weather.domain;
 
 import org.junit.Test;
-import pt.isel.mpd.v1718.li42d.weather.dataAccess.InMemoryWeatherInfoRepository;
+import pt.isel.mpd.v1718.li42d.weather.dataAccess.repositories.InMemoryWeatherInfoRepository;
 
 import java.time.LocalDate;
 import java.util.Collection;

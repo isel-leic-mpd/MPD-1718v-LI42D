@@ -7,9 +7,8 @@ import java.time.LocalDate;
 import java.util.Collection;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-public class ApiRepositoryTests {
+public class FileRepositoryTests {
 
     public static final String LOCATION = "Lisbon";
     public static final LocalDate START = LocalDate.of(2018, 02, 01);
@@ -18,7 +17,7 @@ public class ApiRepositoryTests {
     @Test
     public void shouldGetDailyInfoDtosForALocationBetweenTwoDates() {
         // Arrange
-        WeatherInfoRepository repository = new WorldWeatherOnlineWeatherInfoRepository();
+        WeatherInfoRepository repository = new WorldWeatherOnlineCsvFileWeatherInfoRepository("csvs/weatherInfo.csv");
 
 
         // Act
@@ -26,6 +25,6 @@ public class ApiRepositoryTests {
 
         // Assert
         assertNotNull(dailyWeatherInfoDtos);
-        assertTrue(dailyWeatherInfoDtos.size() > 0);
+        assertNotNull(dailyWeatherInfoDtos.size() > 0);
     }
 }

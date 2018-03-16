@@ -23,7 +23,7 @@ public class WeatherInfoOperationsImpl implements WeatherInfoOperations {
 //                return new DailyWeatherInfo(dto.getMaxTemp(), dto.getMinTemp());
 //            }
 //        });
-        return convertTo(dwiDtos, dto -> new DailyWeatherInfo(dto.getMaxTemp(), dto.getMinTemp()));
+        return convertTo(dwiDtos, dto -> new DailyWeatherInfo(dto.getMaxTemp(), dto.getMinTemp(), dto.getDate()));
 
     }
 
