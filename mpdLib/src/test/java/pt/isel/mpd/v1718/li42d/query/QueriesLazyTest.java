@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class QueriesLazyTests {
+public class QueriesLazyTest {
 
     private List<String> strings = Arrays.asList("Sport", "Lisboa", "e", "Benfica");
 
@@ -20,7 +20,7 @@ public class QueriesLazyTests {
 
 
         // Assert
-        assertEquals(3, Queries.count(filteredStrings));
+        assertEquals(3, QueriesBase.count(filteredStrings));
 
     }
 
@@ -33,7 +33,7 @@ public class QueriesLazyTests {
 
 
         // Assert
-        assertEquals(strings.size(), Queries.count(stringSizes));
+        assertEquals(strings.size(), QueriesBase.count(stringSizes));
 
         // Verify sizes
         int i = 0;
@@ -52,7 +52,7 @@ public class QueriesLazyTests {
 
 
         // Assert
-        assertEquals(TO_TAKE, Queries.count(stringsTaken));
+        assertEquals(TO_TAKE, QueriesBase.count(stringsTaken));
 
         // Verify sizes
         int i = 0;
@@ -71,13 +71,30 @@ public class QueriesLazyTests {
 
 
         // Assert
-        assertEquals(strings.size()-TO_SKIP, Queries.count(stringsAfterSkipped));
+        assertEquals(strings.size()-TO_SKIP, QueriesBase.count(stringsAfterSkipped));
 
         // Verify sizes
         int i = TO_SKIP;
         for (String str : stringsAfterSkipped) {
             assertEquals(strings.get(i++), str);
         }
+    }
+
+    @Test
+    public void shouldGetSecondPageAndMap() {
+        // Arrange
+        List<String> strings = Arrays.asList("Sport", "Lisboa", "e", "Benfica", "Sport", "Lisboa", "e", "Benfica", "Sport", "Lisboa", "e", "Benfica", "Sport", "Lisboa", "e", "Benfica");
+
+        // Act
+        final Iterable<Integer> res = QueriesLazy.map(
+                QueriesLazy.take(
+                        QueriesLazy.skip(strings, 3),
+                        3),
+                String::length);
+
+
+        // Assert
+        assertEquals(3, QueriesBase.count(res));
     }
 
 }

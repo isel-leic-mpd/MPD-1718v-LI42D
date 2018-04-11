@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class QueriesEager extends Queries {
+public class QueriesEager extends QueriesBase {
     public static <T> Iterable<T> filter(Iterable<T> coll, Predicate<T> f) {
         Collection<T> result = new ArrayList<>();
         for (T curr : coll) {

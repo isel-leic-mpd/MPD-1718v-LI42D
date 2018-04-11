@@ -7,12 +7,10 @@ import pt.isel.mpd.v1718.li42d.query.iterators.MapIterator;
 import pt.isel.mpd.v1718.li42d.query.iterators.SkipIterator;
 import pt.isel.mpd.v1718.li42d.query.iterators.TakeIterator;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class QueriesLazy extends Queries {
+public class QueriesLazy extends QueriesBase {
     public static <T> Iterable<T> filter(Iterable<T> iter, Predicate<T> pred) {
         return () -> new FilterIterator(iter.iterator(), pred );
     }
