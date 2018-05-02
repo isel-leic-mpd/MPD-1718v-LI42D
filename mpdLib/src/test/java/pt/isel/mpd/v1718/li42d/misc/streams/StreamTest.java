@@ -1,14 +1,13 @@
 package pt.isel.mpd.v1718.li42d.misc.streams;
 
 import org.junit.Test;
+import pt.isel.mpd.v1718.li42d.stream.Queries;
 
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 public class StreamTest {
 
@@ -42,10 +41,42 @@ public class StreamTest {
         return u1 + u2;
     }
 
-    public <T> List<T>toList(Iterable<T> iter) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iter.iterator(), 0), false)
-        .collect(Collectors.toList());
+
+
+    @Test
+    public void shouldMergeEqualAdjacentElements() {
+        final List<Integer> integers = asList(1, 2, 2, 2, 3, 4, 2, 2, 1, 1);
+
+
+        final List<Integer> res = Queries.collapse(integers.stream())
+                .collect(toList());
+
+        assertIterableEquals(asList(1,2,3,4,2,1), res);
+
+    }
+
+    @Test
+    public void shouldMergeEqualAdjacentElementsForASequenceWithAllElementsEqual() {
+        final List<Integer> integers = asList(2, 2, 2, 2, 2);
+
+
+        final List<Integer> res = Queries.collapse(integers.stream())
+                .collect(toList());
+
+        assertIterableEquals(asList(2), res);
+
     }
 
 
+    @Test
+    public void shouldProduceStreamOfDistinctElements() {
+        final List<Integer> integers = asList(1, 2, 2, 2, 3, 4, 2, 2, 1, 1);
+
+
+        final List<Integer> res = Queries.distinct(integers.stream())
+                .collect(toList());
+
+        assertIterableEquals(asList(1,2,3,4), res);
+
+    }
 }
