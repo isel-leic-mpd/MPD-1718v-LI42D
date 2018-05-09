@@ -29,12 +29,10 @@ public class Queries {
             Optional<T> oldPrev = prev;
             while (
                     src.tryAdvance(t -> {
-                        if (!prev.isPresent() || !t.equals(prev.get())) {
+                        if (!prev.isPresent() || !Objects.equals(t, prev.get())) {
                             action.accept(t);
-                            prev = Optional.of(t);
+                            prev = Optional.ofNullable(t);
                         }
-
-
                     }) && oldPrev == prev) ;
 
             return oldPrev != prev;

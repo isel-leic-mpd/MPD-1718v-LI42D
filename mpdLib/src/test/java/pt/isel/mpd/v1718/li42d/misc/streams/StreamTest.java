@@ -77,6 +77,17 @@ public class StreamTest {
                 .collect(toList());
 
         assertIterableEquals(asList(1,2,3,4), res);
+    }
+
+    @Test
+    public void shouldCollpaseStreamsWithNullElements() {
+        final List<Integer> integers = asList(1, 2, 2, 2, null, null, null, 1);
+
+
+        final List<Integer> res = Queries.collapse(integers.stream())
+                .collect(toList());
+
+        assertIterableEquals(asList(1,2,null,1), res);
 
     }
 }
