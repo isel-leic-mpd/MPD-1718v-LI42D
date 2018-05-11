@@ -20,18 +20,18 @@ public class ListCollector<T> implements Collector<T, List<T>, List<T>> {
 
     @Override
     public BiConsumer<List<T>, T> accumulator() {
-        System.out.println("accumulator method called");
+        //System.out.println("accumulator method called");
         return (l, t) -> {
-            System.out.println("#accumulator function called");
+            //System.out.println("#accumulator function called");
             l.add(t);
         };
     }
 
     @Override
     public BinaryOperator<List<T>> combiner() {
-        System.out.println("combiner method called");
+        //System.out.println("combiner method called");
         return (l1, l2) -> {
-            System.out.println("#combiner function called");
+            //System.out.println("#combiner function called");
 
             l1.addAll(l2); return l1;
         };
@@ -39,16 +39,16 @@ public class ListCollector<T> implements Collector<T, List<T>, List<T>> {
 
     @Override
     public Function<List<T>, List<T>> finisher() {
-        System.out.println("finisher method  called");
+        //System.out.println("finisher method  called");
         return l -> {
-            System.out.println("#finisher function called");
+            //System.out.println("#finisher function called");
             return l;
         };
     }
 
     @Override
     public Set<Characteristics> characteristics() {
-        System.out.println("characteristics method  called");
-        return Collections.unmodifiableSet(EnumSet.of(Characteristics.CONCURRENT, Characteristics.IDENTITY_FINISH));
+        //System.out.println("characteristics method  called");
+        return Collections.unmodifiableSet(EnumSet.of(Characteristics.CONCURRENT, Characteristics.UNORDERED, Characteristics.IDENTITY_FINISH));
     }
 }
