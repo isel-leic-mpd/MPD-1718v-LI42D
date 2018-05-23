@@ -1,19 +1,17 @@
 package football.model;
 
-import com.google.common.util.concurrent.Futures;
 import com.google.gson.Gson;
 import football.data.LeagueDto;
-import football.exception.FootballDataApiException;
+import football.data.LeagueTableDto;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Dsl;
 import util.IRequest;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 /**
@@ -23,6 +21,7 @@ import java.util.stream.Stream;
 public class FootballDataApi {
     private static final String BASE_URL = "https://www.football-data.org/v1/";
     private static final String COMPETITIONS_URL = BASE_URL +  "competitions";
+    private static final String LEAGUE_TABLE_URL = BASE_URL +  "competitions/{0}/leagueTable";
     private static final String API_KEY = "";
 
 
@@ -43,14 +42,21 @@ public class FootballDataApi {
 
     }
 
-    public CompletableFuture<Stream<LeagueDto>> getLeagues() throws FootballDataApiException {
+    public CompletableFuture<Stream<LeagueDto>> getLeagues()  {
         CompletableFuture<String> resp = req.getBody(COMPETITIONS_URL, headarsMap);
-         return resp.thenApply(this::getLeagueDtoStream);
+         return resp.thenApply(this::getDtoStream);
     }
 
-    private Stream<LeagueDto> getLeagueDtoStream(String body) {
-        System.out.println("getLeagueDtoStream");
+    private Stream<LeagueDto> getDtoStream(String body) {
+        System.out.println("getDtoStream");
         final LeagueDto[] leagueDtos = gson.fromJson(body, LeagueDto[].class);
         return Arrays.stream(leagueDtos);
+    }
+
+    public CompletableFuture<LeagueTableDto> getStandings(int leagueId) {
+//        req.getBody(MessageFormat.format(LEAGUE_TABLE_URL, leagueId), headarsMap)
+//        .thenApply();
+        return null;
+
     }
 }
