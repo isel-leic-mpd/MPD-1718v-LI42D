@@ -28,7 +28,7 @@ public class FootballDataApiTest {
 
         // Assert
         final List<LeagueDto> leagues = leagueDtoStream.collect(toList());
-        int NUM_LEAGUES = -1;
+        int NUM_LEAGUES = 17;
         assertEquals(NUM_LEAGUES, leagues.size());
 
 

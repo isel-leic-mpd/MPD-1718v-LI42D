@@ -9,19 +9,23 @@ import org.asynchttpclient.Dsl;
 import util.IRequest;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
+/**
+ * Class that accesses the Football data API (https://www.football-data.org) ans transforms its
+ * responses into DTO entities defined in {@link football.data} package.
+ */
 public class FootballDataApi {
-
-
-    private static final String BASE_URL = "https://www.football-model.org/v1/";
+    private static final String BASE_URL = "https://www.football-data.org/v1/";
     private static final String COMPETITIONS_URL = BASE_URL +  "competitions";
+    private static final String API_KEY = "";
 
 
-    private static Map<String,String> headarsMap;
+    private static Map<String,String> headarsMap = new HashMap<>();
 
 
     private final AsyncHttpClient asyncHttpClient = Dsl.asyncHttpClient();
@@ -29,9 +33,13 @@ public class FootballDataApi {
     final static Gson gson = new Gson();
 
 
-    public FootballDataApi(IRequest req) {
+    static {
+     headarsMap.put("X-Auth-Token", API_KEY);
+    }
 
+    public FootballDataApi(IRequest req) {
         this.req = req;
+
     }
 
     public Future<Stream<LeagueDto>> getLeagues() throws FootballDataApiException {
