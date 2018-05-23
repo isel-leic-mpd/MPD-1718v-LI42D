@@ -3,33 +3,54 @@ package util;
 import io.netty.handler.codec.http.HttpHeaders;
 import org.asynchttpclient.*;
 
+import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.asynchttpclient.Dsl.get;
 
 public class HttpRequest implements IRequest {
     private final AsyncHttpClient asyncHttpClient = Dsl.asyncHttpClient();
 
     @Override
     public Future<String> getBody(String url, Map<String, String> headers) {
-        try {
+        return asyncHttpClient.prepareGet(url).execute(
+                new AsyncHandler<String>() {
 
-            // Obtain the Response
-            final RequestBuilder requestBuilder = get(url);
+                    private String result = "";
 
-            headers.entrySet().stream().forEach(e -> requestBuilder.setHeader(e.getKey(), e.getValue()));
-            final Future<Response> responseFuture = asyncHttpClient.executeRequest(requestBuilder.build());
-            final Response response = responseFuture.get();
+                    @Override
+                    public State onStatusReceived(HttpResponseStatus responseStatus) throws Exception {
+                        System.out.println("onStatusReceived");
+                        return State.CONTINUE;
+                    }
 
-            // Obtain the body content as a String
-            final String responseBody = response.getResponseBody();
+                    @Override
+                    public State onHeadersReceived(HttpHeaders headers) throws Exception {
+                        System.out.println("onHeadersReceived");
+                        return State.CONTINUE;
+                    }
 
-            return new MyImmediateFuture(responseBody);
+                    @Override
+                    public State onBodyPartReceived(HttpResponseBodyPart bodyPart) throws Exception {
+                        System.out.println("onBodyPartReceived");
+                        final String part = new String(bodyPart.getBodyPartBytes());
+                        this.result += part;
+                        return State.CONTINUE;
+                    }
 
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+                    @Override
+                    public void onThrowable(Throwable t) {
+                        System.out.println("onThrowable");
+                    }
+
+                    @Override
+                    public String onCompleted() throws Exception {
+                        System.out.println("onCompleted");
+                        return result;
+                    }
+                }
+        );
+
     }
 }
+

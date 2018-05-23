@@ -16,7 +16,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 /**
- * Class that accesses the Football data API (https://www.football-data.org) ans transforms its
+ * Class that accesses the Football data API (https://www.football-data.org/v1/) ans transforms its
  * responses into DTO entities defined in {@link football.data} package.
  */
 public class FootballDataApi {
