@@ -11,6 +11,7 @@ import util.IRequest;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
@@ -42,22 +43,13 @@ public class FootballDataApi {
 
     }
 
-    public Future<Stream<LeagueDto>> getLeagues() throws FootballDataApiException {
-        Future<String> resp = req.getBody(COMPETITIONS_URL, headarsMap);
-        try {
-            final String body = resp.get();
-
-            final Stream<LeagueDto> stream = getLeagueDtoStream(body);
-            return Futures.immediateFuture(stream);
-
-        } catch (InterruptedException | ExecutionException e) {
-            throw new FootballDataApiException(e);
-        }
-
-
+    public CompletableFuture<Stream<LeagueDto>> getLeagues() throws FootballDataApiException {
+        CompletableFuture<String> resp = req.getBody(COMPETITIONS_URL, headarsMap);
+         return resp.thenApply(this::getLeagueDtoStream);
     }
 
     private Stream<LeagueDto> getLeagueDtoStream(String body) {
+        System.out.println("getLeagueDtoStream");
         final LeagueDto[] leagueDtos = gson.fromJson(body, LeagueDto[].class);
         return Arrays.stream(leagueDtos);
     }

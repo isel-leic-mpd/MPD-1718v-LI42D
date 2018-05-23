@@ -6,6 +6,7 @@ import util.HttpRequest;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
@@ -22,7 +23,7 @@ public class FootballDataApiTest {
         // Arrange
 
         // Act
-        Future<Stream<LeagueDto>> futureLeagueDtos = api.getLeagues();
+        CompletableFuture<Stream<LeagueDto>> futureLeagueDtos = api.getLeagues();
         final Stream<LeagueDto> leagueDtoStream = futureLeagueDtos.get();
 
 
