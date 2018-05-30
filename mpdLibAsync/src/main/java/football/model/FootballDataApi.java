@@ -22,7 +22,9 @@ public class FootballDataApi {
     private static final String BASE_URL = "https://www.football-data.org/v1/";
     private static final String COMPETITIONS_URL = BASE_URL +  "competitions";
     private static final String LEAGUE_TABLE_URL = BASE_URL +  "competitions/{0}/leagueTable";
-    private static final String API_KEY = "";
+    private static final String API_KEY = "f8bc89b8024f459e8a2855df9b934469";
+
+
 
 
     private static Map<String,String> headarsMap = new HashMap<>();
@@ -44,19 +46,27 @@ public class FootballDataApi {
 
     public CompletableFuture<Stream<LeagueDto>> getLeagues()  {
         CompletableFuture<String> resp = req.getBody(COMPETITIONS_URL, headarsMap);
-         return resp.thenApply(this::getDtoStream);
+         return resp.thenApply(this::toDtoStream);
     }
 
-    private Stream<LeagueDto> getDtoStream(String body) {
-        System.out.println("getDtoStream");
+    public CompletableFuture<LeagueTableDto> toLeagueTable(int leagueId) {
+        return req.getBody(MessageFormat.format(LEAGUE_TABLE_URL, leagueId), headarsMap)  // CompletableFuture<String>
+                .thenApply(this::toLeagueTable);        // CompletableFuture<LeagueTableDto>
+    }
+
+
+    private LeagueTableDto toLeagueTable(String body) {
+        System.out.println("toLeagueTable");
+        final LeagueTableDto leagueTableDto = gson.fromJson(body, LeagueTableDto.class);
+        return leagueTableDto;
+
+    }
+
+    private Stream<LeagueDto> toDtoStream(String body) {
+        System.out.println("toDtoStream");
         final LeagueDto[] leagueDtos = gson.fromJson(body, LeagueDto[].class);
         return Arrays.stream(leagueDtos);
     }
 
-    public CompletableFuture<LeagueTableDto> getStandings(int leagueId) {
-//        req.getBody(MessageFormat.format(LEAGUE_TABLE_URL, leagueId), headarsMap)
-//        .thenApply();
-        return null;
 
-    }
 }

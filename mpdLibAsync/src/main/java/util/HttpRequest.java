@@ -8,17 +8,32 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+import static util.Logging.log;
+
 
 public class HttpRequest implements IRequest {
     private final AsyncHttpClient asyncHttpClient = Dsl.asyncHttpClient();
 
     @Override
     public CompletableFuture<String> getBody(String url, Map<String, String> headers) {
+        log("getBody for {0}", url);
 
-        final CompletableFuture<Response> httpClientCf = asyncHttpClient.prepareGet(url).execute().toCompletableFuture();
-        CompletableFuture<String> aftrerTransformationCf =
-                httpClientCf.thenApply(Response::getResponseBody);
-        return aftrerTransformationCf;
+
+        final BoundRequestBuilder boundRequestBuilder = asyncHttpClient.prepareGet(url);
+        headers
+                .entrySet()
+                .stream()
+                .forEach(e -> boundRequestBuilder.addHeader(e.getKey(), e.getValue()));
+
+        return boundRequestBuilder
+                .execute()
+                .toCompletableFuture()
+                .thenApply(r -> {
+                    log("responseBody for {0}", url);
+                    return r;
+                })
+                .thenApply(Response::getResponseBody);
+
 
     }
 }

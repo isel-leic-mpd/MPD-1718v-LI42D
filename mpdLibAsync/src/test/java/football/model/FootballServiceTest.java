@@ -28,7 +28,10 @@ public class FootballServiceTest {
     public void shouldGetFirstPlaceTeamOnALlLeagues() {
 
         // Act
-        List<Standing> standings = footballService.getFirstPlaceOnALlLeagues().join().collect(toList());
+        List<Standing> standings = footballService.getFirstPlaceOnALlLeagues()
+                .join()
+                .peek(System.out::println)
+                .collect(toList());
 
         // Assert
 
@@ -36,7 +39,7 @@ public class FootballServiceTest {
         int NUM_LEAGUES = 17;
         assertEquals(NUM_LEAGUES, standings.size());
 
-        standings.forEach(System.out::println);
+        //standings.forEach(System.out::println);
 
     }
 }

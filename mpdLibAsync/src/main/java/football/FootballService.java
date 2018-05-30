@@ -7,11 +7,8 @@ import football.model.FootballDataApi;
 import football.model.Standing;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 public class FootballService {
     private FootballDataApi api;
@@ -21,18 +18,19 @@ public class FootballService {
     }
 
     public CompletableFuture<Stream<Standing>> getFirstPlaceOnALlLeagues() {
-        return api.getLeagues().thenCompose(this::processLeagues);
+        return api.getLeagues()
+                .thenCompose(this::processLeagues);
 
     }
 
     private CompletableFuture<Stream<Standing>> processLeagues(Stream<LeagueDto> leagueDtoStream) {
 
         final CompletableFuture<LeagueTableDto>[] leagueTableFutures =
-                leagueDtoStream.map(l -> api.getStandings(l.id))
+                leagueDtoStream.map(l -> api.toLeagueTable(l.id))     // Stream<CompletableFuture<LeagueTableDto>
                 .toArray(CompletableFuture[]::new);
 
-
-        return CompletableFuture.allOf(leagueTableFutures).thenApply(v -> convertLeagueTablesToStandings(leagueTableFutures));
+        return CompletableFuture.allOf(leagueTableFutures)      // CompletableFuture<Void>
+                .thenApply(v -> convertLeagueTablesToStandings(leagueTableFutures));
 
 
     }
