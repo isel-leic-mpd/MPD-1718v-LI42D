@@ -25,10 +25,10 @@ public class Standing {
 
     @Override
     public String toString() {
-        return "Standing{" +
+        return "Standing(" +
                 "teamName='" + teamName + '\'' +
                 ", points=" + points +
                 ", leagueName='" + leagueName + '\'' +
-                '}';
+                ")";
     }
 }

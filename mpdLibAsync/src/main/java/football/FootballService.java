@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+
 public class FootballService {
     private FootballDataApi api;
 
@@ -18,6 +20,21 @@ public class FootballService {
     }
 
     public CompletableFuture<Stream<Standing>> getFirstPlaceOnALlLeagues() {
+        return api.getLeagues()         // CompletableFuture<Stream<LeagueDto>>
+                .thenApply(leagueDtoStream ->
+                        leagueDtoStream                             // Stream<leagueDto>
+                                .map(l -> api.toLeagueTable(l.id))  // Stream<CompletableFuture<LeagueTableDto>>
+                                .collect(toList())
+                                .stream()
+                                .map(CompletableFuture::join)               // Stream<LeagueTableDto>
+                                .map(this::convertLeagueTableDtoToStanding) // Stream<Standing>
+                ) // CompletableFuture<Stream<Standing>>
+        ;
+
+
+    }
+
+    public CompletableFuture<Stream<Standing>> getFirstPlaceOnALlLeagues1() {
         return api.getLeagues()
                 .thenCompose(this::processLeagues);
 
