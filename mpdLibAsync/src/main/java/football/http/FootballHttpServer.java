@@ -5,9 +5,12 @@ import football.model.FootballDataApi;
 import football.model.Standing;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import util.HttpRequest;
 import util.Logging;
 
@@ -28,7 +31,16 @@ public class FootballHttpServer {
 
         final HttpServer httpServer = vertx.createHttpServer();
 
-        httpServer.requestHandler(FootballHttpServer::processRequest);
+
+        Router router = Router.router(vertx);
+
+        router.route("/winners").handler(FootballHttpServer::winners);
+        router.get("/league/:id")
+                .handler(FootballHttpServer::leagueDetails);
+        router.post("/league/:id")
+                .handler(FootballHttpServer::leagueDetailsPost);
+
+        httpServer.requestHandler(router::accept);
 
         httpServer.listen(PORT);
 
@@ -37,10 +49,23 @@ public class FootballHttpServer {
         log("Bye!!!");
     }
 
+    private static void leagueDetails(RoutingContext routingContext) {
+        final HttpServerResponse response = routingContext.response();
+        response.headers().add("Content-Type", "text/plain");
 
-    private static void processRequest(HttpServerRequest httpServerRequest) {
-        final HttpServerResponse response = httpServerRequest.response();
-        response.setStatusCode(200);
+
+        response.end("Get League requested has id " + routingContext.request().getParam("id"));
+    }
+
+    private static void leagueDetailsPost(RoutingContext routingContext) {
+        final HttpServerResponse response = routingContext.response();
+        response.headers().add("Content-Type", "text/plain");
+
+        response.end("Post League requested has id " + routingContext.request().getParam("id"));
+    }
+
+    private static void winners(RoutingContext routingContext) {
+        final HttpServerResponse response = routingContext.response();
         response.headers().add("Content-Type", "text/plain");
 
         footballService.getFirstPlaceOnALlLeagues()
