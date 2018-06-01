@@ -19,7 +19,7 @@ public class FootballService {
         this.api = api;
     }
 
-    public CompletableFuture<Stream<Standing>> getFirstPlaceOnALlLeagues() {
+    public CompletableFuture<Stream<Standing>> getFirstPlaceOnALlLeagues1() {
         return api.getLeagues()         // CompletableFuture<Stream<LeagueDto>>
                 .thenApply(leagueDtoStream ->
                         leagueDtoStream                             // Stream<leagueDto>
@@ -34,7 +34,7 @@ public class FootballService {
 
     }
 
-    public CompletableFuture<Stream<Standing>> getFirstPlaceOnALlLeagues1() {
+    public CompletableFuture<Stream<Standing>> getFirstPlaceOnALlLeagues() {
         return api.getLeagues()
                 .thenCompose(this::processLeagues);
 
