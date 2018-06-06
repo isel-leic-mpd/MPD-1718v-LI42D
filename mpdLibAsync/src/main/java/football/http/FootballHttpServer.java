@@ -5,27 +5,25 @@ import football.model.FootballDataApi;
 import football.model.League;
 import football.model.Standing;
 import io.vertx.core.AsyncResult;
-import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
 import util.HttpRequest;
-import util.Logging;
 
 import java.io.IOException;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static util.Logging.log;
 
 public class FootballHttpServer {
     private static final int PORT = 8080;
+    private static final String TEMPLATES_DIR = "templates";
     private static FootballService footballService = new FootballService(new FootballDataApi(new HttpRequest()));
     private static final HandlebarsTemplateEngine handlebarsTemplateEngine = HandlebarsTemplateEngine.create();
 
@@ -37,7 +35,7 @@ public class FootballHttpServer {
 
         Router router = Router.router(vertx);
 
-        router.route("/winners").handler(FootballHttpServer::winners);
+        router.route("/leaders").handler(FootballHttpServer::leaders);
         router.get("/league/:id")
                 .handler(FootballHttpServer::leagueDetails);
         router.post("/league/:id")
@@ -51,27 +49,16 @@ public class FootballHttpServer {
     }
 
     private static void leagueDetails(RoutingContext ctx) {
-        final HttpServerResponse response = ctx.response();
-        response.headers().add("Content-Type", "text/html");
 
         ctx.put("title", "League Details");
 
         final League l = new League(1, "Liga Portuguesa");
         ctx.put("league", l);
 
-        // VERY IMPORTANT: the template name in the next call (/details) must have the leading '/0, otherwise it wont work
-        handlebarsTemplateEngine.render(ctx, "templates", "/leagueDetails", res -> detailsTemplateHandler(ctx, res));
+        // VERY IMPORTANT: the template name in the next call (/details) must have the leading '/', otherwise it wont work
+        renderTemplate(ctx, "/leagueDetails");
     }
 
-    private static void detailsTemplateHandler(RoutingContext ctx, AsyncResult<Buffer> res) {
-        if (res.succeeded()) {
-            ctx.response().end(res.result());
-        } else {
-            log("Error executing template: ", res.cause());
-            ctx.fail(res.cause());
-        }
-
-    }
 
     private static void leagueDetailsPost(RoutingContext routingContext) {
         final HttpServerResponse response = routingContext.response();
@@ -80,21 +67,35 @@ public class FootballHttpServer {
         response.end("Post League requested has id " + routingContext.request().getParam("id"));
     }
 
-    private static void winners(RoutingContext routingContext) {
+    private static void leaders(RoutingContext routingContext) {
         final HttpServerResponse response = routingContext.response();
-        response.headers().add("Content-Type", "text/plain");
+        response.headers().add("Content-Type", "Content-Type: text/html; charset=utf-8");
 
         footballService.getFirstPlaceOnALlLeagues()
-                .thenAccept(standingStream ->
-                        response.end(generateStandingsString(standingStream))
-                );
+                .thenAccept(standingsStream -> FootballHttpServer.generateStandingsPage(routingContext, standingsStream));
     }
 
-    private static String generateStandingsString(Stream<Standing> standingStream) {
-        return standingStream
-                .map(Standing::toString)
-                .peek(Logging::log)
-                .collect(joining("\n"));
+    private static void generateStandingsPage(RoutingContext ctx, Stream<Standing> standingStream) {
+        ctx.put("title", "Leagues Leaders");
+        ctx.put("leaders", standingStream.collect(toList()));
+        renderTemplate(ctx, "/leagueLeaders");
+
+    }
+
+    private static void renderTemplate(RoutingContext ctx, String templateName) {
+        handlebarsTemplateEngine.render(ctx, TEMPLATES_DIR, templateName, res -> sendTemplateResult(ctx, res));
+        log("Requested template {0} to render.", templateName);
+    }
+
+
+    private static void sendTemplateResult(RoutingContext ctx, AsyncResult<Buffer> res) {
+        if (res.succeeded()) {
+            ctx.response().end(res.result());
+        } else {
+            log("Error executing template: ", res.cause());
+            ctx.fail(res.cause());
+        }
+
     }
 
 }

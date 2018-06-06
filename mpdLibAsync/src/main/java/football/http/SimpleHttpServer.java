@@ -20,7 +20,7 @@ public class SimpleHttpServer {
 
         final HttpServer httpServer = vertx.createHttpServer();
 
-        httpServer.requestHandler(SimpleHttpServer::processRequest);
+        httpServer.requestHandler(SimpleHttpServer::processRequestChunked);
 
         httpServer.listen(PORT);
 
